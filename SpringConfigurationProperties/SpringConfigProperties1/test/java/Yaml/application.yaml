@@ -1,0 +1,8 @@
+application:
+  name: Belajar Spring Boot using yaml
+  version: 3
+  production-mode: false
+
+  #kita bisa membuat configuration juga menggunakan file yaml
+  #contoh ingin menjalankannya dari luar
+  #java -jar /target/nama-file-jar --spring.config.location=application.yaml

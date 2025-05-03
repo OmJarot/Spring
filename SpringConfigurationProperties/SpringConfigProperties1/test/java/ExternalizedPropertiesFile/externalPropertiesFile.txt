@@ -1,0 +1,3 @@
+jika ingin menggunakan file properties dari luar saat sudah menjadi jar
+java -jar target/nama-file-jar --spring.config.location=external.properties
+ini otomatis akan menggunakan file properties dari luar

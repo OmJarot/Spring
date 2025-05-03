@@ -1,0 +1,9 @@
+jika ingin mengubah isi properties saat aplikasi sudah di compile menjadi jar menggunakan environment variabel
+
+kita harus mengatur variable propertiesnya dulu
+cth:
+application.name=${APPLICATION_NAME:Belajar Spring Boot}
+application.version=${APPLICATION_VERSION:1}
+application.production-mode=${APPLICATION_PRODUCTION_MODE:false}
+
+dia akan mencari dari environment variable jika tidak ada akan menjalankan defaultnya contoh Belajar Spring Boot
