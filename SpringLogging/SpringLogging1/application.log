@@ -1,0 +1,6 @@
+2025-04-14T15:16:59.643+07:00  INFO 4516 --- [spring-logging] [main] LogPattern.LogPatternTest                : Starting LogPatternTest using Java 23.0.2 with PID 4516 (started by My Computer in C:\JavaLearn\spring-logging)
+2025-04-14T15:16:59.645+07:00  INFO 4516 --- [spring-logging] [main] LogPattern.LogPatternTest                : No active profile set, falling back to 1 default profile: "default"
+2025-04-14T15:16:59.700+07:00  INFO 4516 --- [spring-logging] [main] LogPattern.LogPatternTest                : Started LogPatternTest in 0.272 seconds (process running for 0.792)
+2025-04-14T15:17:00.134+07:00  INFO 4516 --- [spring-logging] [main] LogPattern.LogPatternTest                : info
+2025-04-14T15:17:00.134+07:00  WARN 4516 --- [spring-logging] [main] LogPattern.LogPatternTest                : warn
+2025-04-14T15:17:00.134+07:00 ERROR 4516 --- [spring-logging] [main] LogPattern.LogPatternTest                : error
