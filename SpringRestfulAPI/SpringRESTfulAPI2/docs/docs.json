@@ -1,0 +1,1359 @@
+{
+  "openapi": "3.0.0",
+  "info": {
+    "title": "RESTfulAPI Spec",
+    "description": "Documentation RESTfulAPI",
+    "version": "1.0.0",
+    "termsOfService": "https://example.com",
+    "contact": {
+      "name": "Piter",
+      "email": "pangaribuanpiter4@gmail.com",
+      "url": "https:/www.example.com"
+    },
+    "license": {
+      "name": "APACHE 2.0",
+      "url": "https://www.apache.org/licenses/LICENSE-2.0"
+    }
+  },
+  "servers":  [
+    {
+      "url": "https://{environmentId}.example.com/api/v1",
+      "description": "RESTful API Server",
+      "variables": {
+        "environmentId" : {
+          "description": "Server environment",
+          "default": "www",
+          "enum": [
+            "dev",
+            "qa",
+            "prod"
+          ]
+        }
+      }
+    }
+  ],
+  "externalDocs": {
+    "description": "RESTful API external docs",
+    "url": "https://example.com"
+  },
+  "paths": {
+    "/api/users" : {
+      "post": {
+        "summary": "Register User",
+        "description": "Register",
+        "tags": ["User"],
+        "requestBody": {
+          "description": "Create new User",
+          "required": true,
+          "content": {
+            "application/json" : {
+              "schema": {
+                "type": "object",
+                "required": ["name","username","password"],
+                "properties": {
+                  "name" : {
+                    "type": "string",
+                    "maximum": 100
+                  },
+                  "username" : {
+                    "type": "string",
+                    "maximum": 100
+                  },
+                  "password" : {
+                    "type": "string",
+                    "maximum": 100
+                  }
+                }
+              },
+              "examples": {
+                "piter" : {
+                  "description": "Example create user Piter",
+                  "value": {
+                    "name" : "Piter Pangaribuan",
+                    "username" : "piter",
+                    "password" : "rahasia"
+                  }
+                },
+                "joko" : {
+                  "description": "Example create user joko",
+                  "value": {
+                    "name" : "Jokowi widodo",
+                    "username" : "joko",
+                    "password" : "rahasia"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200" : {
+            "description": "Response Success",
+            "content": {
+              "application/json" : {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data" : {
+                      "type": "string"
+                    }
+                  }
+                },
+                "examples": {
+                  "success" : {
+                    "description": "success create user",
+                    "value": {
+                      "data" : "OK"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Error request",
+            "content": {
+              "application/json" : {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error" : {
+                      "type": "string"
+                    }
+                  }
+                },
+                "examples": {
+                  "username" : {
+                    "description": "Example error username null",
+                    "value": {
+                      "error" : "Username cannot null"
+                    }
+                  },
+                  "duplicate" : {
+                    "description": "Example error duplicate",
+                    "value": {
+                      "error" : "Username already registered"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/auth/login" : {
+      "post": {
+        "tags": ["User"],
+        "summary": "Login User",
+        "description": "Login User",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json" : {
+              "schema": {
+                "$ref": "#/components/schemas/loginReq"
+              },
+              "examples": {
+                "piter" : {
+                  "description": "Login user piter",
+                  "value": {
+                    "username" : "piter",
+                    "password" : "rahasia"
+                  }
+                },
+                "joko" : {
+                  "description": "Login user joko",
+                  "value": {
+                    "username" : "joko",
+                    "password" : "rahasia"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200" : {
+            "description": "Success Login",
+            "content": {
+              "application/json" : {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data" : {
+                      "type": "object",
+                      "properties": {
+                        "token" : {
+                          "type": "string"
+                        },
+                        "expiredAt" : {
+                          "type": "integer",
+                          "format": "int64"
+                        }
+                      }
+                    }
+                  }
+                },
+                "examples": {
+                  "piter" : {
+                    "description": "Response login as piter",
+                    "value": {
+                      "data" : {
+                        "token" : "random-string",
+                        "expiredAt" : 31293123213
+                      }
+                    }
+                  },
+                  "png" : {
+                    "description": "Response login as png",
+                    "value": {
+                      "data" : {
+                        "token" : "random-string",
+                        "expiredAt" : 32230103201
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401" : {
+            "description": "Error Login",
+            "content": {
+              "application/json" : {
+                "schema": {
+                  "$ref": "#/components/schemas/error"
+                },
+                "examples": {
+                  "error" : {
+                    "description": "Example wrong username or password",
+                    "value": {
+                      "error" : "Username or Password error"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/users/current" : {
+      "get" : {
+        "description": "Get user current",
+        "summary": "Get user current",
+        "tags": ["User"],
+        "security": [
+          {
+            "token" : []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success get current user",
+            "content": {
+              "application/json" : {
+                "schema": {
+                  "$ref": "#/components/schemas/userPassRes"
+                },
+                "examples": {
+                  "getCurrent" : {
+                    "description": "Get user current example",
+                    "value": {
+                      "data" : {
+                        "username" : "piter",
+                        "password" : "rahasia"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Error get user current",
+            "content": {
+              "application/json" : {
+                "schema": {
+                  "$ref": "#/components/schemas/error"
+                },
+                "examples": {
+                  "errors" : {
+                    "description": "example error",
+                    "value": {
+                      "error" : "Unauthorized"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "patch": {
+        "description": "Update User",
+        "summary": "Update User",
+        "tags": ["User"],
+        "security": [
+          {
+            "token" : []
+          }
+        ],
+        "requestBody": {
+          "description": "Request update user",
+          "content": {
+            "application/json" : {
+              "schema": {
+                "$ref": "#/components/schemas/updateReq"
+              },
+              "examples": {
+                "update request" : {
+                  "description": "Request update user",
+                  "value": {
+                    "name" : "Piter new",
+                    "password" : "new password"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Success update",
+            "content": {
+              "application/json" : {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data" : {
+                      "type": "object",
+                      "properties": {
+                        "name" : {
+                          "type": "string"
+                        },
+                        "password" : {
+                          "type": "string"
+                        }
+                      }
+                    }
+                  }
+                },
+                "examples": {
+                  "success response" : {
+                    "description": "Success update example",
+                    "value": {
+                      "data" : {
+                        "name" : "piter new",
+                        "password" : "new password"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Error response",
+            "content": {
+              "application/json" : {
+                "schema": {
+                  "$ref": "#/components/schemas/error"
+                },
+                "examples": {
+                  "response error" : {
+                    "description": "Unauthorized",
+                    "value": {
+                      "error" : "Unauthorized"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/auth/logout" : {
+      "delete": {
+        "summary": "Logout",
+        "tags": ["User"],
+        "security": [
+          {
+            "token" : []
+          }
+        ],
+        "description": "Logouts",
+        "servers": [],
+        "responses": {
+          "200": {
+            "description": "Success logout",
+            "content": {
+              "application/json" : {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data" : {
+                      "type": "string"
+                    }
+                  }
+                },
+                "examples": {
+                  "success logout" : {
+                    "description": "Example success logout",
+                    "value": {
+                        "data" : "OK"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+
+    "/api/contacts" : {
+      "post": {
+        "tags": ["Contact"],
+        "summary": "Create new Contact",
+        "security": [
+          {
+            "token" : []
+          }
+        ],
+        "description": "Create new contact",
+        "requestBody": {
+          "content": {
+            "application/json" : {
+              "schema": {
+                "$ref": "#/components/schemas/contactReq"
+              },
+              "examples": {
+                "piter" : {
+                  "$ref": "#/components/examples/exampleReqContact1"
+                },
+                "eko" : {
+                  "$ref": "#/components/examples/exampleReqContact1"
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200" : {
+            "description": "Success create new Contact",
+            "content": {
+              "application/json" : {
+                "schema": {
+                  "$ref": "#/components/schemas/contactRes"
+                },
+                "examples": {
+                  "piter" : {
+                    "$ref": "#/components/examples/exampleResContact1"
+                  },
+                  "eko" : {
+                    "$ref": "#/components/examples/exampleResContact2"
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Failed Create new Contact",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/error"
+                },
+                "examples": {
+                  "error" : {
+                    "description": "Example response error",
+                    "value": {
+                      "error" : "Email format invalid, phone format invalid"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "get": {
+        "tags": ["Contact"],
+        "security": [
+          {
+            "token" : ["Contact"]
+          }
+        ],
+        "description": "Search Contact filter",
+        "summary": "Get All contact filter",
+        "parameters": [
+          {
+            "name": "name",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "$ref": "#/components/schemas/param"
+            }
+          },
+          {
+            "name": "phone",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "$ref": "#/components/schemas/param"
+            }
+          },
+          {
+            "name": "email",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "$ref": "#/components/schemas/param"
+            }
+          },
+          {
+            "name": "page",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32",
+              "default": 0
+            }
+          },
+          {
+            "name": "size",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32",
+              "default": 10
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Response success",
+            "content": {
+              "application/json" : {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data" : {
+                      "type": "array",
+                      "items": {
+                        "$ref": "#/components/schemas/contactRes"
+                      }
+                    },
+                    "page" : {
+                      "type": "object",
+                      "properties": {
+                        "currentPage" : {
+                          "type": "integer",
+                          "format": "int32",
+                          "default": 0
+                        },
+                        "TotalPage" : {
+                          "type": "integer",
+                          "format": "int32",
+                          "default": 10
+                        },
+                        "sizePage" : {
+                          "type": "integer",
+                          "format": "int32",
+                          "default": 10
+                        }
+                      }
+                    }
+                  }
+                },
+                "example": {
+                  "data" : [
+                    {
+                      "id" : "random-string",
+                      "firstname" : "piter",
+                      "lastname" : "pangaribuan",
+                      "email" : "piter@gmail.com",
+                      "phone" : "1232"
+                    },
+                    {
+                      "id" : "random-string",
+                      "firstname" : "png",
+                      "lastname" : "pangaribuan",
+                      "email" : "png@gmail.com",
+                      "phone" : "324312"
+                    }
+                  ],
+                  "page" : {
+                    "currentPage" : 0,
+                    "totalPage" : 10,
+                    "size" : 10
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/contacts/{idContact}" : {
+      "put": {
+        "tags": ["Contact"],
+        "security": [
+          {
+            "token" : []
+          }
+        ],
+        "summary": "Update Contact",
+        "description": "Update contact",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/idContact"
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json" : {
+              "schema": {
+                "$ref": "#/components/schemas/contactReq"
+              },
+              "examples": {
+                "piter" : {
+                  "$ref": "#/components/examples/exampleReqContact1"
+                },
+                "eko" : {
+                  "$ref": "#/components/examples/exampleReqContact2"
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200" : {
+            "description": "Success update contact response",
+            "content": {
+              "application/json" : {
+                "schema": {
+                  "$ref": "#/components/schemas/contactRes"
+                },
+                "examples": {
+                  "piter" : {
+                    "$ref": "#/components/examples/exampleResContact2"
+                  },
+                  "eko" : {
+                    "$ref": "#/components/examples/exampleResContact2"
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Failed Update Contacts",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/error"
+                },
+                "examples": {
+                  "exampleError" : {
+                    "description": "Example response error",
+                    "value": {
+                      "error" : "Email format invalid, phone format invalid, ..."
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "get": {
+        "tags": ["Contact"],
+        "security": [
+          {
+            "token" : []
+          }
+        ],
+        "summary": "Get Contact",
+        "description": "Get contact",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/idContact"
+          }
+        ],
+        "responses": {
+          "200" : {
+            "description": "Response Get Contact",
+            "content": {
+              "application/json" : {
+                "schema": {
+                  "$ref": "#/components/schemas/contactRes"
+                },
+                "examples": {
+                  "piter" : {
+                    "$ref": "#/components/examples/exampleResContact1"
+                  },
+                  "eko" : {
+                    "$ref": "#/components/examples/exampleResContact2"
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Error get contact",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/error"
+                },
+                "examples": {
+                  "error" : {
+                    "value": {
+                      "error" : "Contact not found"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "description": "Remove contact from database",
+        "summary": "Remove contact",
+        "tags": ["Contact"],
+        "security": [
+          {
+            "token" : []
+          }
+        ],
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/idContact"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Response success remove contact",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "description": "Success delete Contact",
+                  "properties": {
+                    "data" : {
+                      "type": "string"
+                    }
+                  }
+                },
+                "example": {
+                  "data" : "OK"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+
+    "/api/contacts/{idContact}/addresses" : {
+      "post": {
+        "tags": ["Address"],
+        "description": "Create new address",
+        "summary": "Create new address",
+        "security": [
+          {
+            "token" : []
+          }
+        ],
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/idContact"
+          }
+        ],
+        "requestBody": {
+          "description": "Request Create new address",
+          "required": true,
+          "content": {
+            "application/json" : {
+              "schema": {
+                "$ref": "#/components/schemas/addressReq"
+              },
+              "examples": {
+                "batam" : {
+                  "$ref": "#/components/examples/addressExample"
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Success create new address response",
+            "content": {
+              "application/json" : {
+                "schema": {
+                  "$ref": "#/components/schemas/addressRes"
+                },
+                "examples": {
+                  "res" : {
+                    "$ref": "#/components/examples/addressRespExample"
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Contact not found",
+            "content": {
+              "application/json" : {
+                "schema": {
+                  "$ref": "#/components/schemas/error"
+                },
+                "examples": {
+                  "error" : {
+                    "$ref": "#/components/examples/errorExample"
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "get": {
+        "tags": ["Address"],
+        "summary": "Get All address",
+        "description": "Get all address",
+        "security": [
+          {
+            "token" : []
+          }
+        ],
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/idContact"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success all address",
+            "content": {
+              "application/json" : {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data" : {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "id" : {
+                            "type": "string"
+                          },
+                          "street" : {
+                            "type": "string"
+                          },
+                          "city" : {
+                            "type": "string"
+                          },
+                          "province" : {
+                            "type": "string"
+                          },
+                          "country" : {
+                            "type": "string"
+                          },
+                          "postalCode" : {
+                            "type": "string"
+                          }
+                        }
+                      }
+                    }
+                  }
+                },
+                "examples": {
+                  "success" : {
+                    "description": "example success get all address",
+                    "value": {
+                      "data" : [
+                        {
+                          "id" : "random-string",
+                          "street" : "jalan apa",
+                          "city" : "batam",
+                          "province" : "kepri",
+                          "country" : "indonesia",
+                          "postalCode" : "32123"
+                        }
+                      ]
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Error",
+            "content": {
+              "application/json" : {
+                "schema": {
+                  "$ref": "#/components/schemas/error"
+                },
+                "examples": {
+                  "error": {
+                    "$ref": "#/components/examples/errorExample"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/contacts/{idContact}/addresses/{idAddress}" : {
+      "put": {
+        "tags": ["Address"],
+        "summary": "Update address",
+        "description": "Update Address",
+        "security": [
+          {
+            "token" : []
+          }
+        ],
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/idContact"
+          },
+          {
+            "$ref": "#/components/parameters/idAddress"
+          }
+        ],
+        "requestBody": {
+          "description": "Request update",
+          "content": {
+            "application/json" : {
+              "schema": {
+                "$ref": "#/components/schemas/addressReq"
+              },
+              "examples": {
+                "request" : {
+                  "$ref": "#/components/examples/addressExample"
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Success update address",
+            "content": {
+              "application/json" : {
+                "schema": {
+                  "$ref": "#/components/schemas/addressRes"
+                },
+                "examples": {
+                  "success" : {
+                    "$ref": "#/components/examples/addressRespExample"
+                  }
+                }
+              }
+            }
+          },
+          "404" : {
+            "description": "Error",
+            "content": {
+              "application/json" : {
+                "schema": {
+                  "$ref": "#/components/schemas/error"
+                },
+                "examples": {
+                  "error" : {
+                    "$ref": "#/components/examples/errorExample"
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "get": {
+        "tags": ["Address"],
+        "summary": "Get address",
+        "description": "Get address",
+        "security": [
+          {
+            "token" : []
+          }
+        ],
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/idContact"
+          },
+          {
+            "$ref": "#/components/parameters/idAddress"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success get address",
+            "content": {
+              "application/json" : {
+                "schema": {
+                  "$ref": "#/components/schemas/addressRes"
+                },
+                "examples": {
+                  "Success" : {
+                    "$ref": "#/components/examples/addressRespExample"
+                  }
+                }
+              }
+            }
+          },
+          "404" : {
+            "description": "Error",
+            "content": {
+              "application/json" : {
+                "schema": {
+                  "$ref": "#/components/schemas/error"
+                },
+                "examples": {
+                  "Error" : {
+                    "$ref": "#/components/examples/errorExample"
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "tags": ["Address"],
+        "summary": "Update address",
+        "description": "Get address",
+        "security": [
+          {
+            "token" : []
+          }
+        ],
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/idContact"
+          },
+          {
+            "$ref": "#/components/parameters/idAddress"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success get address",
+            "content": {
+              "application/json" : {
+                "schema": {
+                  "$ref": "#/components/schemas/addressRes"
+                },
+                "examples": {
+                  "success" : {
+                    "$ref": "#/components/examples/addressRespExample"
+                  }
+                }
+              }
+            }
+          },
+          "404" : {
+            "description": "Error",
+            "content": {
+              "application/json" : {
+                "schema": {
+                  "$ref": "#/components/schemas/error"
+                },
+                "examples": {
+                  "Error" : {
+                    "$ref": "#/components/examples/errorExample"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "examples": {
+      "exampleResContact1" : {
+        "description": "Response create new contact Piter",
+        "value": {
+          "data" : {
+            "id" : "random-string",
+            "firstname" : "piter",
+            "lastname" : "pangaribuan",
+            "email" : "piter@gmail.com",
+            "phone" : "1232"
+          }
+        }
+      },
+      "exampleResContact2" : {
+        "description": "Response create new contact Png",
+        "value": {
+          "data" : {
+            "id" : "random-string",
+            "firstname" : "png",
+            "lastname" : "pp",
+            "email" : "png@gmail.com",
+            "phone" : "12323223"
+          }
+        }
+      },
+      "exampleReqContact1" : {
+        "description": "Create contact piter",
+        "value": {
+          "firstName" : "Piter",
+          "lastName" : "Pangaribuan",
+          "email" : "Piter@Gmail.com",
+          "phone" : "1232123"
+        }
+      },
+      "exampleReqContact2" : {
+        "description": "Create contact Eko",
+        "value": {
+          "firstName" : "Eko",
+          "lastName" : "Oko",
+          "email" : "EkoOKo@Gmail.com",
+          "phone" : "321231"
+        }
+      },
+      "addressExample" : {
+        "description": "Example address batam",
+        "value": {
+          "street" : "jalan apa",
+          "city" : "batam",
+          "province" : "kepri",
+          "country" : "indonesia",
+          "postalCode" : "32123"
+        }
+      },
+      "addressRespExample" : {
+        "description": "Response success",
+        "value": {
+          "data" : {
+            "id" : "1232",
+            "street" : "jalan apa",
+            "city" : "batam",
+            "province" : "kepri",
+            "country" : "indonesia",
+            "postalCode" : "32123"
+          }
+        }
+      },
+      "errorExample" : {
+        "description": "Error response",
+        "value": {
+          "data" : "Erro"
+        }
+      }
+
+    },
+    "schemas": {
+      "contactRes" : {
+        "type": "object",
+        "properties": {
+          "data" : {
+            "type": "object",
+            "properties": {
+              "id" : {
+                "type": "string"
+              },
+              "firstName" : {
+                "type": "string"
+              },
+              "lastName" : {
+                "type": "string"
+              },
+              "email" : {
+                "type": "string"
+              },
+              "phone" : {
+                "type": "string"
+              }
+            }
+          }
+        }
+      },
+      "contactReq" : {
+        "type": "object",
+        "properties": {
+          "firstName": {
+            "type": "string"
+          },
+          "lastName": {
+            "type": "string"
+          },
+          "email": {
+            "type": "string"
+          },
+          "phone": {
+            "type": "string"
+          }
+        }
+      },
+      "param" : {
+        "type": "string",
+        "minLength": 1,
+        "maxLength": 100
+      },
+      "error" : {
+        "type": "object",
+        "properties": {
+          "error" : {
+            "type": "string"
+          }
+        }
+      },
+      "loginReq" : {
+        "required": ["username", "password"],
+        "type": "object",
+        "properties": {
+          "username" : {
+            "type": "string"
+          },
+          "password" : {
+            "type": "string"
+          }
+        }
+      },
+      "userPassRes" : {
+        "type": "object",
+        "properties": {
+          "data" : {
+            "type": "object",
+            "properties": {
+              "data" : {
+                "type": "object",
+                "properties": {
+                  "username" : {
+                    "type": "string"
+                  },
+                  "password" : {
+                    "type": "string"
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "updateReq" : {
+        "type": "object",
+        "properties": {
+          "name" : {
+            "type": "string"
+          },
+          "password" : {
+            "type": "string"
+          }
+        }
+      },
+      "addressReq" : {
+        "type": "object",
+        "required": ["country"],
+        "properties": {
+          "street" : {
+            "type": "string"
+          },
+          "city" : {
+            "type": "string"
+          },
+          "province" : {
+            "type": "string"
+          },
+          "country" : {
+            "type": "string"
+          },
+          "postalCode" : {
+            "type": "string"
+          }
+        }
+      },
+      "addressRes" : {
+        "type": "object",
+        "properties": {
+          "data" : {
+            "type": "object",
+            "properties": {
+              "id" : {
+                "type": "string"
+              },
+              "street" : {
+                "type": "string"
+              },
+              "city" : {
+                "type": "string"
+              },
+              "province" : {
+                "type": "string"
+              },
+              "country" : {
+                "type": "string"
+              },
+              "postalCode" : {
+                "type": "string"
+              }
+            }
+          }
+        }
+      }
+    },
+    "securitySchemes": {
+      "token" :{
+        "description": "Authentication for RESTful API",
+        "type": "apiKey",
+        "in": "header",
+        "name": "X-API-TOKEN"
+      }
+    },
+    "parameters": {
+      "idContact" : {
+        "name": "idContact",
+        "in": "path",
+        "required": true,
+        "description": "Parameter contactId",
+        "schema": {
+          "$ref": "#/components/schemas/param"
+        },
+        "examples": {
+          "piter" : {
+            "description": "id contact piter",
+            "value": "123"
+          },
+          "pangaribuan" : {
+            "description": "id contact pangaribuan",
+            "value": "321"
+          }
+        }
+      },
+      "idAddress" : {
+        "name": "idAddress",
+        "in": "path",
+        "required": true,
+        "description": "Parameter id Address",
+        "schema": {
+          "$ref": "#/components/schemas/param"
+        },
+        "examples": {
+          "piter" : {
+            "description": "Id address",
+            "value": "123"
+          },
+          "pangaribuan" : {
+            "description": "id address",
+            "value": "321"
+          }
+        }
+      }
+    }
+  }
+}
+
